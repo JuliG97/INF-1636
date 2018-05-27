@@ -14,4 +14,5 @@ public class Rook extends Piece{
 			System.exit(1);
 		}
 	}
+			
 }

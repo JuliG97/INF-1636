@@ -13,6 +13,15 @@ public class Board {
 		
 		board[7][0].setPiece(new Rook());
 		board[7][7].setPiece(new Rook());
+		board[7][1].setPiece(new Knight());
+		board[7][6].setPiece(new Knight());
+		board[7][2].setPiece(new Bishop());
+		board[7][5].setPiece(new Bishop());
+		board[7][3].setPiece(new Queen());
+		board[7][4].setPiece(new King());
+		for(int j = 0; j<8; j++) {
+			board[6][j].setPiece(new Pawn());
+		}
 		
 	}
 	
