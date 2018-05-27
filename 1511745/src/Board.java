@@ -10,6 +10,10 @@ public class Board {
 				board[i][j] = new Tile();
 			}
 		}
+		
+		board[7][0].setPiece(new Rook());
+		board[7][7].setPiece(new Rook());
+		
 	}
 	
 	public static Tile[][] getBoard(){

@@ -31,6 +31,10 @@ public class BoardPanel extends JPanel{
 				}
 				g2d.fill(tile);
 				g2d.draw(tile);
+				
+				if(board[i][j].getPiece() != null){
+					g.drawImage(board[i][j].getPiece().getImage(),j*(boardDimension/8)+(boardDimension/32),i*(boardDimension/8)+(boardDimension/32),null);
+				}
 			}
 		}
 	}
