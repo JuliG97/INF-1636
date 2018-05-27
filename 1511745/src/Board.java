@@ -33,10 +33,16 @@ public class Board {
 		for(int j = 0; j<8; j++) {
 			board[1][j].setPiece(new Pawn_Blk());
 		}
+		
 	}
 	
 	public static Tile[][] getBoard(){
 		return board;
+	}
+	
+	public static void updatePieceLocation(Tile t1, Tile t2){
+		t2.setPiece(t1.getPiece());
+		t1.setPiece(null);
 	}
 
 }

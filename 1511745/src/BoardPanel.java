@@ -24,10 +24,14 @@ public class BoardPanel extends JPanel{
 			for(int j = 0; j<8; j++){
 				ti = new TileInterface(j*(boardDimension/8), i*(boardDimension/8), (boardDimension/8), (boardDimension/8));
 				Rectangle2D tile = ti.getSquare();
-				if((i+j) % 2 == 0){
-					g2d.setPaint(Color.WHITE);
+				if(board[i][j].getSelected() == true){
+					g2d.setPaint(Color.YELLOW);
 				}else{
-					g2d.setPaint(Color.BLACK);
+					if((i+j) % 2 == 0){
+						g2d.setPaint(Color.WHITE);
+					}else{
+						g2d.setPaint(Color.BLACK);
+					}
 				}
 				g2d.fill(tile);
 				g2d.draw(tile);
