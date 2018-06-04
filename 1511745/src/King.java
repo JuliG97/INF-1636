@@ -6,9 +6,19 @@ import javax.imageio.ImageIO;
 
 public class King extends Piece{
 	
-	King(){
+	PieceColor color;
+	
+	King(PieceColor c){
+		color = c;
+		String imagem = "";
+		
+		if(color == PieceColor.BLACK){
+			imagem = "p_rei.gif";
+		}else if(color == PieceColor.WHITE){
+			imagem = "b_rei.gif";
+		}
 		try{
-			i=ImageIO.read(new File("Pecas/Pecas_1/b_rei.gif"));
+			i=ImageIO.read(new File("Pecas/Pecas_1/"+imagem));
 		}catch(IOException e) {
 			System.out.println(e.getMessage());
 			System.exit(1);

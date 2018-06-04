@@ -3,6 +3,7 @@ public class Tile {
 	
 	private Piece piece;
 	private Boolean selected = false;
+	private Boolean highlighted = false;
 	
 	public void setPiece(Piece p){
 		piece = p;
@@ -20,5 +21,11 @@ public class Tile {
 		return selected;
 	}
 	
+	public void setHighlighted(Boolean b){
+		highlighted = b;
+	}
 	
+	public Boolean getHighlighted(){
+		return highlighted;
+	}
 }

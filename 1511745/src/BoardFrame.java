@@ -2,31 +2,42 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JFrame;
 
 public class BoardFrame extends JFrame{
 	
-	public static int boardDimension = 640;
-	private static Tile[][] board;
-	static BoardPanel bp;
-	static Tile selectedTile = null;
-
+	private static BoardFrame bf = null;
 	
-	public BoardFrame(Tile[][] board){
+	private static Board board;
+	public static int boardDimension = 640;
+	private static Tile[][] boardMatrix;
+	private BoardPanel bp;
+	static Tile selectedTile = null;
+	static List<Tile> movementOptions = null;
+	
+	private BoardFrame(Board board){
 		setSize(boardDimension+3, boardDimension+25);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		bp = new BoardPanel(board, boardDimension);
+		BoardFrame.board = board;
+		BoardFrame.boardMatrix = board.getBoardMatrix();
+		bp = BoardPanel.getBoardPanel(boardMatrix, boardDimension);
 		getContentPane().add(bp);
 		
 		addMouseListener(boardClickHandler);
-		
-		BoardFrame.board = board;
-		
+	}
+
+	
+	public static BoardFrame getBoardFrame(Board board){
+		if(bf == null){
+			bf = new BoardFrame(board);
+		}
+		return bf;
 	}
 	
-	public static MouseAdapter boardClickHandler = new MouseAdapter() {
+	public MouseAdapter boardClickHandler = new MouseAdapter() {
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
 	    	Point click = e.getPoint();
@@ -36,15 +47,20 @@ public class BoardFrame extends JFrame{
 	    	int row = (int) (click.getY()/(boardDimension/8));
 	    	
 	    	if(selectedTile == null){
-	    		if(board[row][column].getPiece() != null){
-	    			selectedTile = board[row][column];
-	    			board[row][column].setSelected(true);
+	    		if(boardMatrix[row][column].getPiece() != null){
+	    			selectedTile = boardMatrix[row][column];
+	    			boardMatrix[row][column].setSelected(true);
+	    			movementOptions = board.highlightMovemetOptions(row, column);
 	    		}
 	    	}else{
-	    		if(selectedTile != board[row][column]){
+	    		if(selectedTile != boardMatrix[row][column]){
+	    			
+	    			if(movementOptions.contains(boardMatrix[row][column])){
+			    		board.updatePieceLocation(selectedTile, boardMatrix[row][column]);
+	    			}
 	    			selectedTile.setSelected(false);
-		    		Board.updatePieceLocation(selectedTile, board[row][column]);
-		    		selectedTile = null;
+	    			selectedTile = null;
+	    			movementOptions = null;
 	    		}
 	    	}
 	    	bp.repaint();

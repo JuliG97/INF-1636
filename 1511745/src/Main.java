@@ -3,11 +3,12 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		Board.InitializeBoard();
-		BoardFrame board = new BoardFrame(Board.getBoard());
-		board.setTitle("Chess Game");
+		Board board = Board.getBoard();
+		board.InitializeBoard();
 		
-		board.setVisible(true);
+		BoardFrame bf = BoardFrame.getBoardFrame(board);
+		bf.setTitle("Chess Game");
+		bf.setVisible(true);
 		
 	}
 }
