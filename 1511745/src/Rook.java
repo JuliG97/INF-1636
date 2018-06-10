@@ -27,4 +27,45 @@ public class Rook extends Piece{
 			System.exit(1);
 		}
 	}		
-}
+
+
+	public List<Tile> getMovementOptions(int row, int column) {
+		List<Tile> movementOptions = new ArrayList<Tile>();
+		Tile[][] board = Board.getBoard().getBoardMatrix();
+		
+				
+		int i = row; int j = column;
+		while(i>=1) {
+			movementOptions.add(board[i-1][j]);
+			i--;
+		}
+		
+		i = row; j = column;
+		while(i <= 6) {
+			movementOptions.add(board[i+1][j]);
+			i++;
+		}
+		
+		i = row; j = column;
+		while(j>=1) {
+			movementOptions.add(board[i][j-1]);
+			j--;
+		}
+		
+		i = row; j = column;
+		while(j<=6) {
+			movementOptions.add(board[i][j+1]);
+			j++;
+		}
+					
+		System.out.println("Roook");
+		return movementOptions;
+	}
+	}
+
+		
+		
+		
+		
+
+
