@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 
 public class Pawn extends Piece {
 	
-	PieceColor color;
 	Boolean hasMoved = false;
 	
 	Pawn(PieceColor c){
@@ -35,6 +34,7 @@ public class Pawn extends Piece {
 		List<Tile> movementOptions = new ArrayList<Tile>();
 		Tile[][] board = Board.getBoard().getBoardMatrix();
 		
+		Piece pieceToMove = board[row][column].getPiece();
 		int i = row+1; 
 		int j = column;
 		
@@ -59,12 +59,12 @@ public class Pawn extends Piece {
 				movementOptions.add(board[i][j]);
 			}
 			if(j<7){
-				if(board[i][j+1].getPiece() != null){
+				if(board[i][j+1].getPiece() != null && (board[i][j+1].getPiece().getColor() != pieceToMove.getColor() )){
 					movementOptions.add(board[i][j+1]);
 				}
 			}
 			if(j>0){
-				if(board[i][j-1].getPiece() != null){
+				if(board[i][j-1].getPiece() != null && (board[i][j-1].getPiece().getColor() != pieceToMove.getColor() )){
 					movementOptions.add(board[i][j-1]);
 				}
 			}

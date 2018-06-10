@@ -8,8 +8,6 @@ import javax.imageio.ImageIO;
 
 public class Bishop extends Piece{
 	
-	PieceColor color;
-	
 	Bishop(PieceColor c){
 		color = c;
 		String imagem = "";
@@ -29,35 +27,61 @@ public class Bishop extends Piece{
 	}
 	
 	public List<Tile> getMovementOptions(int row, int column) {
+		
 		List<Tile> movementOptions = new ArrayList<Tile>();
 		Tile[][] board = Board.getBoard().getBoardMatrix();
 		
+		Piece pieceToMove = board[row][column].getPiece();
+		
 		int i = row-1; int j = column-1;
-		while(i>=0 && j>=0 && board[i][j].getPiece() == null){
+		while(i>=0 && j>=0){  //top left
+			if(board[i][j].getPiece() != null){
+				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+					movementOptions.add(board[i][j]);
+				}
+				break;
+			}
 			movementOptions.add(board[i][j]);
 			i--; j--;
 		}
 		
 		i = row-1; j = column+1;
-		while(i>=0 && j<=7 && board[i][j].getPiece() == null){
+		while(i>=0 && j<=7){  //top right
+			if(board[i][j].getPiece() != null){
+				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+					movementOptions.add(board[i][j]);
+				}
+				break;
+			}
 			movementOptions.add(board[i][j]);
 			i--; j++;
 		}
 		
 		i = row+1; j = column-1;
-		while(i<=7 && j>=0 && board[i][j].getPiece() == null){
+		while(i<=7 && j>=0){  //down left
+			if(board[i][j].getPiece() != null){
+				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+					movementOptions.add(board[i][j]);
+				}
+				break;
+			}
 			movementOptions.add(board[i][j]);
 			i++; j--;
 		}
 		
 		i = row+1; j = column+1;
-		while(i<=7 && j<=7 && board[i][j].getPiece() == null){
+		while(i<=7 && j<=7){  //down right
+			if(board[i][j].getPiece() != null){
+				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+					movementOptions.add(board[i][j]);
+				}
+				break;
+			}
 			movementOptions.add(board[i][j]);
 			i++; j++;
 		}
 		
 		
-		System.out.println("bishooooop");
 		return movementOptions;
 	}
 }
