@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Piece {
 	
+	PieceColor color;
 	protected Image i;
 	
 	public Image getImage(){
@@ -18,6 +19,10 @@ public class Piece {
 	
 	public void moved(){
 		
+	}
+	
+	public PieceColor getColor(){
+		return color;
 	}
 
 }
