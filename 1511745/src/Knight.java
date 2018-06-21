@@ -10,8 +10,10 @@ import javax.imageio.ImageIO;
 
 public class Knight extends Piece {
 	
-	PieceColor color;
-	Boolean hasMoved = false;
+	List<Tile> movementOptions;
+	Tile[][] board;
+	Piece pieceToMove;
+	Piece temp;
 	
 	Knight(PieceColor c){
 		color = c;
@@ -30,69 +32,69 @@ public class Knight extends Piece {
 			System.exit(1);
 		}
 	}
-
-	public List<Tile> getMovementOptions(int row, int column) {
-		List<Tile> movementOptions = new ArrayList<Tile>();
-		Tile[][] board = Board.getBoard().getBoardMatrix();
+	
+	public List<Tile> getMovementOptions(Tile tile) {
+		movementOptions = new ArrayList<Tile>();
+		board = Board.getBoard().getBoardMatrix();
 		
-		int i = row; 
-		int j = column;
+		int row = tile.getRow();
+		int column = tile.getColumn();
 		
-		if(color == PieceColor.WHITE){
-			//i = row-1;
-			//if(board[i-1][j+1].getPiece() == null){
-				movementOptions.add(board[i-2][j+1]);
-			
-			//if(board[i-1][j-1].getPiece() == null){
-				movementOptions.add(board[i-2][j-1]);
-				
-			if(j <= 5) {
-				movementOptions.add(board[i-1][j+2]);
-			}
-			
-			if(j >= 2) {
-				movementOptions.add(board[i-1][j-2]);
-			}
-			
-			//if(i>0 && i<7) {
-				//movementOptions.add(board[i-1][j-2]);
-				//movementOptions.add(board[i-1][j+2]);
-			//}
-		}
-			
-		else{
-			//if(board[i+1][j].getPiece() == null){
-				movementOptions.add(board[i+2][j+1]);
-				movementOptions.add(board[i+2][j-1]);
-				
-			if(j <= 5) {
-				movementOptions.add(board[i+1][j+2]);
-			}
-			if(j >= 2) {
-				movementOptions.add(board[i+1][j-2]);
-			}
-						
-		}
+		pieceToMove = board[row][column].getPiece();
 		
-		if(i>0 && i<7) {
-			movementOptions.add(board[i-1][j-2]);
-			movementOptions.add(board[i-1][j+2]);
-			movementOptions.add(board[i+1][j-2]);
-			movementOptions.add(board[i+1][j+2]);
+		int i; int j;
+		int a = 2; int b = 1;
+		
+		for(int w=0; w<=3; w++){
+			i = row+a; j = column+b;
+			addMovementOption(i, j, row, column);
+			i = row+b; j = column+a;
+			addMovementOption(i, j, row, column);
+			
+			if(w % 2 == 0){
+				a=a*(-1); 
+			}else{
+				b=b*(-1);
+			}
 		}
 				
 		return movementOptions;
 	}
-
-	public void moved(){
-		hasMoved = true;
+	
+	private void addMovementOption(int i, int j, int row, int column){
+		
+		if(i>=0 && i<=7 && j>=0 && j<=7){
+			
+			if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
+				temp = board[i][j].getPiece();
+				board[i][j].setPiece(pieceToMove);
+				board[row][column].setPiece(null);
+				
+				for(Tile[] t: board){
+					for(Tile tile: t){
+						if(tile.getPiece() != null && !(tile.getPiece() instanceof King)){
+							if(tile.getPiece().getColor() != pieceToMove.getColor()){
+								if(Board.getBoard().pieceThreatensKing(tile)){
+									board[i][j].setPiece(temp);
+									board[row][column].setPiece(pieceToMove);
+									return;
+								}
+							}
+						}
+					}
+				}
+				
+				board[i][j].setPiece(temp);
+				board[row][column].setPiece(pieceToMove);
+			}
+			
+			if(board[i][j].getPiece() != null){
+				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+					movementOptions.add(board[i][j]);
+				}
+			}else{
+				movementOptions.add(board[i][j]);
+			}
+		}
 	}
-	}
-
-
-
-
-
-
-
-
+}

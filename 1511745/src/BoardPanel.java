@@ -1,23 +1,33 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 public class BoardPanel extends JPanel{
 	
 	Tile[][] boardMatrix;
 	int boardDimension;
+	InterfaceFacade interfaceFacade;
 	
 	private static BoardPanel bp=null;
-	JPopupMenu pop;
 	
 	private BoardPanel(Tile[][] boardMatrix, int boardDimension){
 		this.boardMatrix = boardMatrix;
 		this.boardDimension = boardDimension;
+		
+		interfaceFacade = InterfaceFacade.getInterfaceFacade();
+		
+		PawnPromotionMenu.createPopUpMenu();
 		
 	}
 	
@@ -25,6 +35,10 @@ public class BoardPanel extends JPanel{
 		if(bp == null){
 			bp = new BoardPanel(boardMatrix, boardDimension);
 		}
+		return bp;
+	}
+	
+	public static BoardPanel getBoardPanel() {
 		return bp;
 	}
 	
@@ -38,12 +52,12 @@ public class BoardPanel extends JPanel{
 				ti = new TileInterface(j*(boardDimension/8), i*(boardDimension/8), (boardDimension/8), (boardDimension/8));
 				Rectangle2D tile = ti.getSquare();
 				Tile t = boardMatrix[i][j];
-				if(boardMatrix[i][j].getSelected() == true){
+				if(interfaceFacade.getTileSelection(t) == true){ //the tile with the selected piece is painted yellow
 					g2d.setPaint(Color.YELLOW);
 				}else{
-					if(boardMatrix[i][j].getHighlighted() == true){
+					if(interfaceFacade.getTileHighlighted(t) == true){
 						g2d.setPaint(Color.GREEN);
-						boardMatrix[i][j].setHighlighted(false);
+						interfaceFacade.setTileHighlighted(t, false);
 					}else{
 						if((i+j) % 2 == 0){
 							g2d.setPaint(Color.WHITE);
@@ -51,12 +65,17 @@ public class BoardPanel extends JPanel{
 							g2d.setPaint(Color.BLACK);
 						}
 					}
+					
+					if(interfaceFacade.getRoqueState(t) == true){
+						g2d.setPaint(Color.BLUE);
+					}
 				}
 				g2d.fill(tile);
 				g2d.draw(tile);
 				
-				if(boardMatrix[i][j].getPiece() != null){
-					g.drawImage(boardMatrix[i][j].getPiece().getImage(),j*(boardDimension/8)+(boardDimension/32),i*(boardDimension/8)+(boardDimension/32),null);
+				Piece p = interfaceFacade.getTilePiece(t);
+				if(p != null){
+					g.drawImage(interfaceFacade.getPieceImage(p),j*(boardDimension/8)+(boardDimension/32),i*(boardDimension/8)+(boardDimension/32),null);
 				}
 			}
 		}

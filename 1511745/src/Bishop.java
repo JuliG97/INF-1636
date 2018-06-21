@@ -8,9 +8,15 @@ import javax.imageio.ImageIO;
 
 public class Bishop extends Piece{
 	
+	List<Tile> movementOptions;
+	Tile[][] board;
+	Piece pieceToMove;
+	Piece temp;
+	
 	Bishop(PieceColor c){
 		color = c;
 		String imagem = "";
+		
 		
 		if(color == PieceColor.BLACK){
 			imagem = "p_bispo.gif";
@@ -26,63 +32,80 @@ public class Bishop extends Piece{
 		}
 	}
 	
-	public List<Tile> getMovementOptions(int row, int column) {
+	public List<Tile> getMovementOptions(Tile tile) {
+		movementOptions = new ArrayList<Tile>();
+		board = Board.getBoard().getBoardMatrix();
 		
-		List<Tile> movementOptions = new ArrayList<Tile>();
-		Tile[][] board = Board.getBoard().getBoardMatrix();
+		int row = tile.getRow();
+		int column = tile.getColumn();
 		
-		Piece pieceToMove = board[row][column].getPiece();
+		pieceToMove = board[row][column].getPiece();
 		
 		int i = row-1; int j = column-1;
 		while(i>=0 && j>=0){  //top left
-			if(board[i][j].getPiece() != null){
-				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
-					movementOptions.add(board[i][j]);
-				}
-				break;
-			}
-			movementOptions.add(board[i][j]);
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i--; j--;
 		}
 		
 		i = row-1; j = column+1;
 		while(i>=0 && j<=7){  //top right
-			if(board[i][j].getPiece() != null){
-				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
-					movementOptions.add(board[i][j]);
-				}
-				break;
-			}
-			movementOptions.add(board[i][j]);
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i--; j++;
 		}
 		
 		i = row+1; j = column-1;
 		while(i<=7 && j>=0){  //down left
-			if(board[i][j].getPiece() != null){
-				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
-					movementOptions.add(board[i][j]);
-				}
-				break;
-			}
-			movementOptions.add(board[i][j]);
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i++; j--;
 		}
 		
 		i = row+1; j = column+1;
 		while(i<=7 && j<=7){  //down right
-			if(board[i][j].getPiece() != null){
-				if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
-					movementOptions.add(board[i][j]);
-				}
-				break;
-			}
-			movementOptions.add(board[i][j]);
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i++; j++;
 		}
 		
 		
 		return movementOptions;
+	}
+	
+	private int addMovementOption(int i, int j, int row, int column){
+		
+		if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
+			temp = board[i][j].getPiece();
+			board[i][j].setPiece(pieceToMove);
+			board[row][column].setPiece(null);
+			
+			for(Tile[] t: board){
+				for(Tile tile: t){
+					if(tile.getPiece() != null && !(tile.getPiece() instanceof King)){
+						if(tile.getPiece().getColor() != pieceToMove.getColor()){
+							if(Board.getBoard().pieceThreatensKing(tile)){
+								board[i][j].setPiece(temp);
+								board[row][column].setPiece(pieceToMove);
+								if(temp != null){
+									return 0; //break here
+								}
+								return 1;
+							}
+						}
+					}
+				}
+			}
+			
+			board[i][j].setPiece(temp);
+			board[row][column].setPiece(pieceToMove);
+		}
+		
+		if(board[i][j].getPiece() != null){
+			if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+				this.movementOptions.add(board[i][j]);
+			}
+			return 0; //break here
+		}
+		this.movementOptions.add(board[i][j]);
+		return 1;
+		
 	}
 }
 

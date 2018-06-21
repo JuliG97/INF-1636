@@ -10,7 +10,10 @@ import javax.imageio.ImageIO;
 
 public class Pawn extends Piece {
 	
-	Boolean hasMoved = false;
+	List<Tile> movementOptions;
+	Tile[][] board;
+	Piece pieceToMove;
+	Piece temp;
 	
 	Pawn(PieceColor c){
 		color = c;
@@ -30,42 +33,47 @@ public class Pawn extends Piece {
 		}
 	}
 	
-	public List<Tile> getMovementOptions(int row, int column) {
-		List<Tile> movementOptions = new ArrayList<Tile>();
-		Tile[][] board = Board.getBoard().getBoardMatrix();
+	public List<Tile> getMovementOptions(Tile tile) {
+		movementOptions = new ArrayList<Tile>();
+		board = Board.getBoard().getBoardMatrix();
 		
-		Piece pieceToMove = board[row][column].getPiece();
-		int i = row+1; 
+		int row = tile.getRow();
+		int column = tile.getColumn();
+		
+		pieceToMove = board[row][column].getPiece();
+		int i = row + 1; 
 		int j = column;
 		
 		if(color == PieceColor.WHITE){
-			i = row-1;
+			i = row - 1;
 			if(hasMoved == false){
 				if(board[i-1][j].getPiece() == null){
-					movementOptions.add(board[i-1][j]);
+					addMovementOption(i-1, j, row, column);
 				}
 			}
 		}else{
 			if(hasMoved == false){
 				if(board[i+1][j].getPiece() == null){
-					movementOptions.add(board[i+1][j]);
+					addMovementOption(i+1, j, row, column);
 				}
 			}
 		}
 		
 		
-		if(i>=0 && i<=7){
+		if(row>=0 && row<=7){
 			if(board[i][j].getPiece() == null){
-				movementOptions.add(board[i][j]);
+				addMovementOption(i, j, row, column);
 			}
-			if(j<7){
-				if(board[i][j+1].getPiece() != null && (board[i][j+1].getPiece().getColor() != pieceToMove.getColor() )){
-					movementOptions.add(board[i][j+1]);
+			if(column<7){
+				j = column + 1;
+				if(board[i][j].getPiece() != null && (board[i][j].getPiece().getColor() != pieceToMove.getColor() )){
+					addMovementOption(i, j, row, column);
 				}
 			}
-			if(j>0){
-				if(board[i][j-1].getPiece() != null && (board[i][j-1].getPiece().getColor() != pieceToMove.getColor() )){
-					movementOptions.add(board[i][j-1]);
+			if(column>0){
+				j = column - 1;
+				if(board[i][j].getPiece() != null && (board[i][j].getPiece().getColor() != pieceToMove.getColor() )){
+					addMovementOption(i, j, row, column);
 				}
 			}
 		}
@@ -73,7 +81,30 @@ public class Pawn extends Piece {
 		return movementOptions;
 	}
 	
-	public void moved(){
-		hasMoved = true;
+	private void addMovementOption(int i, int j, int row, int column){
+		if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
+			temp = board[i][j].getPiece();
+			board[i][j].setPiece(pieceToMove);
+			board[row][column].setPiece(null);
+			
+			for(Tile[] t: board){ //if the movement will result in the king beeing in check then the movement is not possible
+				for(Tile tile: t){
+					if(tile.getPiece() != null && !(tile.getPiece() instanceof King)){
+						if(tile.getPiece().getColor() != pieceToMove.getColor()){
+							if(Board.getBoard().pieceThreatensKing(tile)){
+								board[i][j].setPiece(temp);
+								board[row][column].setPiece(pieceToMove);
+								return;
+							}
+						}
+					}
+				}
+			}
+			
+			board[i][j].setPiece(temp);
+			board[row][column].setPiece(pieceToMove);
+		}
+		
+		movementOptions.add(board[i][j]);
 	}
 }

@@ -8,7 +8,10 @@ import javax.imageio.ImageIO;
 
 public class Rook extends Piece{
 	
-	PieceColor color;
+	List<Tile> movementOptions;
+	Tile[][] board;
+	Piece pieceToMove;
+	Piece temp;
 	
 	Rook(PieceColor c){
 		color = c;
@@ -26,46 +29,82 @@ public class Rook extends Piece{
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
-	}		
-
-
-	public List<Tile> getMovementOptions(int row, int column) {
-		List<Tile> movementOptions = new ArrayList<Tile>();
-		Tile[][] board = Board.getBoard().getBoardMatrix();
+	}
+	
+	public List<Tile> getMovementOptions(Tile tile) {
+		movementOptions = new ArrayList<Tile>();
+		board = Board.getBoard().getBoardMatrix();
 		
-				
-		int i = row; int j = column;
-		while(i>=1) {
-			movementOptions.add(board[i-1][j]);
+		int row = tile.getRow();
+		int column = tile.getColumn();
+		
+		pieceToMove = board[row][column].getPiece();
+		
+		int i; int j;
+		
+		i = row-1; j = column;
+		while(i>=0) { //up
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i--;
 		}
 		
-		i = row; j = column;
-		while(i <= 6) {
-			movementOptions.add(board[i+1][j]);
+		i = row+1; j = column;
+		while(i <= 7) { //down
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			i++;
 		}
 		
-		i = row; j = column;
-		while(j>=1) {
-			movementOptions.add(board[i][j-1]);
+		i = row; j = column-1;
+		while(j>=0) { //left
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			j--;
 		}
 		
-		i = row; j = column;
-		while(j<=6) {
-			movementOptions.add(board[i][j+1]);
+		i = row; j = column+1;
+		while(j<=7) { //right
+			if(addMovementOption(i, j, row, column) == 0){break;}
 			j++;
 		}
-					
-		System.out.println("Roook");
+			
 		return movementOptions;
 	}
+	
+	private int addMovementOption(int i, int j, int row, int column){
+		
+		if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
+			temp = board[i][j].getPiece();
+			board[i][j].setPiece(pieceToMove);
+			board[row][column].setPiece(null);
+			
+			for(Tile[] t: board){ //if the movement will result in the king beeing in check then the movement is not possible
+				for(Tile tile: t){
+					if(tile.getPiece() != null && !(tile.getPiece() instanceof King)){
+						if(tile.getPiece().getColor() != pieceToMove.getColor()){
+							if(Board.getBoard().pieceThreatensKing(tile)){
+								board[i][j].setPiece(temp);
+								board[row][column].setPiece(pieceToMove);
+								if(temp != null){
+									return 0; //break here
+								}
+								return 1;
+							}
+						}
+					}
+				}
+			}
+			
+			board[i][j].setPiece(temp);
+			board[row][column].setPiece(pieceToMove);
+		}
+		
+		if(board[i][j].getPiece() != null){
+			if(board[i][j].getPiece().getColor() != pieceToMove.getColor()){
+				this.movementOptions.add(board[i][j]);
+			}
+			return 0; //break here
+		}
+		this.movementOptions.add(board[i][j]);
+		return 1;
+		
 	}
-
-		
-		
-		
-		
-
-
+}
