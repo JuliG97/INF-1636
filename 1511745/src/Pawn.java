@@ -47,20 +47,20 @@ public class Pawn extends Piece {
 		if(color == PieceColor.WHITE){
 			i = row - 1;
 			if(hasMoved == false){
-				if(board[i-1][j].getPiece() == null){
+				if(board[i-1][j].getPiece() == null && board[i][j].getPiece() == null){
 					addMovementOption(i-1, j, row, column);
 				}
 			}
 		}else{
 			if(hasMoved == false){
-				if(board[i+1][j].getPiece() == null){
+				if(board[i+1][j].getPiece() == null && board[i][j].getPiece() == null){
 					addMovementOption(i+1, j, row, column);
 				}
 			}
 		}
 		
 		
-		if(row>=0 && row<=7){
+		if(i>=0 && i<=7){
 			if(board[i][j].getPiece() == null){
 				addMovementOption(i, j, row, column);
 			}

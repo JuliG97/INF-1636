@@ -1,8 +1,16 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Board extends Observable{
 	
@@ -11,7 +19,7 @@ public class Board extends Observable{
 	InterfaceFacade interfaceFacade;
 	private PieceColor kingIsChecked = null;
 	private PieceColor playerTurn = PieceColor.WHITE;
-	private int gameOverState = 0;
+	private int gameOverState = -1;
 	
 	private Board(){
 		interfaceFacade = InterfaceFacade.getInterfaceFacade();
@@ -198,5 +206,134 @@ public class Board extends Observable{
 		kingIsChecked = null;
 		
 		dataChanged();
+	}
+	
+	public void saveGame(){
+		try {
+    		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+    		System.out.println(timeStamp);
+    		
+    		String file_path = "SavedData/" + timeStamp + ".txt";
+    		
+    		//File arquivo = new File(file_path);
+    		FileWriter file = new FileWriter(file_path);
+            BufferedWriter buffer = new BufferedWriter(file);
+            
+            Piece piece;
+            for(int i = 0; i<=7; i++){
+            	for(int j = 0; j<=7; j++){
+            		piece = boardMatrix[i][j].getPiece();
+            		
+            		if(piece != null){
+            			if(piece.getColor() == PieceColor.WHITE){
+            				buffer.write("W");
+            			}else{
+            				buffer.write("B");
+            			}
+            			
+            			if(piece instanceof King){
+            				buffer.write("K");
+            			}else if(piece instanceof Queen){
+            				buffer.write("Q");
+            			}else if(piece instanceof Bishop){
+            				buffer.write("B");
+            			}else if(piece instanceof Pawn){
+            				buffer.write("P");
+            			}else if(piece instanceof Rook){
+            				buffer.write("R");
+            			}else if(piece instanceof Knight){
+            				buffer.write("H");
+            			}
+            			
+            			if(piece.getMovedState() == true){
+            				buffer.write("1");
+            			}else{
+            				buffer.write("0");
+            			}
+            		}else{
+            			buffer.write("00");
+            		}
+            		buffer.newLine();
+            	}
+            }
+            
+            if(playerTurn == PieceColor.WHITE){
+            	buffer.write("0");
+            }else{
+            	buffer.write("1");
+            }
+            
+            buffer.close();
+            
+            System.out.println("Game saved!!! :)");
+        
+		}catch(IOException ex) {
+            ex.printStackTrace();
+        }
+	}
+	
+	public void loadGame(){
+		JFileChooser chooser = new JFileChooser();
+		String fileName = "";
+	    FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+	    chooser.setFileFilter(filter);
+	    chooser.setCurrentDirectory(new java.io.File("./SavedData"));
+	    int returnVal = chooser.showOpenDialog(null);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	      fileName = chooser.getSelectedFile().getName();
+	    }
+	    
+	    try {
+	    	BufferedReader br = new BufferedReader(new FileReader("SavedData/" + fileName));
+	    	String piece = "";
+	    	PieceColor color = null;
+	    	
+	    	for(int i = 0; i<=7; i++){
+            	for(int j = 0; j<=7; j++){
+            		piece = br.readLine();
+            		if(piece.charAt(0) != '0'){
+            			if(piece.charAt(0) == 'W'){
+            				color = PieceColor.WHITE;
+            			}else if(piece.charAt(0) == 'B'){
+            				color = PieceColor.BLACK;
+            			}
+            			
+            			if(piece.charAt(1) == 'K'){
+            				boardMatrix[i][j].setPiece(new King(color));
+            			}else if(piece.charAt(1) == 'Q'){
+            				boardMatrix[i][j].setPiece(new Queen(color));
+            			}else if(piece.charAt(1) == 'B'){
+            				boardMatrix[i][j].setPiece(new Bishop(color));
+            			}else if(piece.charAt(1) == 'P'){
+            				boardMatrix[i][j].setPiece(new Pawn(color));
+            			}else if(piece.charAt(1) == 'R'){
+            				boardMatrix[i][j].setPiece(new Rook(color));
+            			}else if(piece.charAt(1) == 'H'){
+            				boardMatrix[i][j].setPiece(new Knight(color));
+            			}
+            			
+            			if(piece.charAt(2) == '1'){
+            				boardMatrix[i][j].getPiece().moved();
+            			}
+            		}else{
+            			boardMatrix[i][j].setPiece(null);
+            		}
+            	}
+	    	}
+	    	
+	    	if(br.readLine().charAt(0) == '0'){
+	    		playerTurn = PieceColor.WHITE;
+	    	}else{
+	    		playerTurn = PieceColor.BLACK;
+	    	}
+	    	
+	    	br.close();
+	    	
+	    	gameOverState = 0;
+			dataChanged();
+			
+	    } catch (IOException e) {
+    		e.printStackTrace();
+    	}
 	}
 }

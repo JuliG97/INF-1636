@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -25,9 +26,38 @@ public class BoardPanel extends JPanel{
 		this.boardMatrix = boardMatrix;
 		this.boardDimension = boardDimension;
 		
+		this.setLayout(null);
+		
 		interfaceFacade = InterfaceFacade.getInterfaceFacade();
 		
 		PawnPromotionMenu.createPopUpMenu();
+		
+		JButton newGame = new JButton("NOVO JOGO");
+		newGame.setBounds(95,280,200,80);
+		
+		JButton loadGame = new JButton("CONTINUAR JOGO");
+		loadGame.setBounds(345,280,200,80);
+		
+		newGame.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGame.setVisible(false);
+				loadGame.setVisible(false);
+				interfaceFacade.resetGame();
+			}
+		});
+		
+		loadGame.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newGame.setVisible(false);
+				loadGame.setVisible(false);
+				interfaceFacade.loadGame();
+			}
+		});
+		
+		this.add(newGame);
+		this.add(loadGame);
 		
 	}
 	
@@ -70,6 +100,7 @@ public class BoardPanel extends JPanel{
 						g2d.setPaint(Color.BLUE);
 					}
 				}
+				
 				g2d.fill(tile);
 				g2d.draw(tile);
 				

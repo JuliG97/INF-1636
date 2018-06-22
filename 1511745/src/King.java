@@ -75,29 +75,28 @@ public class King extends Piece{
 			}
 		}
 		
-	
-	i = row; j = column - 4 ; /////checking for the possibility of Roque move
-	if(Board.getBoard().getChekState() != pieceToMove.getColor()){
-		if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
-			if(i>=0 && i<=7 && j>=0 && j<=7){
-				if(board[i][j].getPiece() != null){
-					if(pieceToMove.getMovedState() == false && board[i][j].getPiece().getMovedState() == false){
-						board[i][j].setRoque(true);
-						for(int x = j+1; x<column; x++){
-							if(board[i][x].getPiece() != null){
-								board[i][j].setRoque(false);
+		i = row; j = column - 4 ; /////checking for the possibility of Roque move
+		if(Board.getBoard().getChekState() != pieceToMove.getColor()){
+			if(Board.getBoard().getPlayerTurn() == pieceToMove.getColor()){
+				if(i>=0 && i<=7 && j>=0 && j<=7){
+					if(board[i][j].getPiece() != null){
+						if(pieceToMove.getMovedState() == false && board[i][j].getPiece().getMovedState() == false){
+							board[i][j].setRoque(true);
+							for(int x = j+1; x<column; x++){
+								if(board[i][x].getPiece() != null){
+									board[i][j].setRoque(false);
+								}
 							}
+						}else{
+							board[i][j].setRoque(false);
 						}
-					}else{
-						board[i][j].setRoque(false);
 					}
 				}
 			}
 		}
+		
+		return movementOptions;
 	}
-	
-	return movementOptions;
-}
 	
 	private void addMovementOption(int i, int j, int row, int column){
 		

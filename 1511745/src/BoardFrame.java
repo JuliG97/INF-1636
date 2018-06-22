@@ -2,12 +2,18 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class BoardFrame extends JFrame implements Observer{
 	
@@ -31,6 +37,7 @@ public class BoardFrame extends JFrame implements Observer{
 		
 		BoardFrame.board = board;
 		BoardFrame.boardMatrix = interfaceFacade.getBoardMatrix();
+		
 		bp = BoardPanel.getBoardPanel(boardMatrix, boardDimension);
 		getContentPane().add(bp);
 		
@@ -50,43 +57,48 @@ public class BoardFrame extends JFrame implements Observer{
 	public MouseAdapter boardClickHandler = new MouseAdapter() {
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
-	    	Point click = e.getPoint();
 	    	
-	    	int column = (int) (click.getX()/(boardDimension/8));
-	    	int row = (int) (click.getY()/(boardDimension/8));
-	    	
-	    	Tile tileClicked = interfaceFacade.getTile(row, column);
-	    	
-	    	if(selectedTile == null){ //if there is no piece selected the player must select a piece to move
-	    		if(interfaceFacade.getPieceColor(interfaceFacade.getTilePiece(tileClicked)) == interfaceFacade.getPlayerTurn()){
-		    		if(interfaceFacade.getTilePiece(tileClicked) != null){
-		    			selectedTile = tileClicked;
-		    			interfaceFacade.getTile(row, column).setSelected(true);
-		    			movementOptions = interfaceFacade.highlightMoveOptions(row, column);
-		    		}
-	    		}
-	    	}else{ //otherwise if there is a piece selected the player must choose where to move the piece
-	    		if(selectedTile != interfaceFacade.getTile(row, column)){
-	    			
-	    			if(movementOptions.contains(tileClicked)){ //check if the selected piece can go to the tile clicked
-			    		interfaceFacade.updateBoardPieceLocation(selectedTile, tileClicked);
-	    			}
-	    			
-	    			if(interfaceFacade.getRoqueState(tileClicked) == true){
-	    				interfaceFacade.Roque(selectedTile, tileClicked);
-	    			}
-	    			
-	    			interfaceFacade.setRoqueState(interfaceFacade.getTile(0, 0), false);
-	    			interfaceFacade.setRoqueState(interfaceFacade.getTile(7, 0), false);
-	    			interfaceFacade.setRoqueState(interfaceFacade.getTile(0, 7), false);
-	    			interfaceFacade.setRoqueState(interfaceFacade.getTile(7, 7), false);
-	    			
-	    			interfaceFacade.setTileSelection(selectedTile, false);
-	    			selectedTile = null;
-	    			movementOptions = null;
-	    		}
+	    	if(SwingUtilities.isLeftMouseButton(e)){
+		    	if(interfaceFacade.getGameOverState() != -1){
+			    	Point click = e.getPoint();
+			    	
+			    	int column = (int) (click.getX()/(boardDimension/8));
+			    	int row = (int) ((click.getY() - 30)/(boardDimension/8));
+			    	
+			    	Tile tileClicked = interfaceFacade.getTile(row, column);
+			    	
+			    	if(selectedTile == null){ //if there is no piece selected the player must select a piece to move
+			    		if(interfaceFacade.getPieceColor(interfaceFacade.getTilePiece(tileClicked)) == interfaceFacade.getPlayerTurn()){
+				    		if(interfaceFacade.getTilePiece(tileClicked) != null){
+				    			selectedTile = tileClicked;
+				    			interfaceFacade.getTile(row, column).setSelected(true);
+				    			movementOptions = interfaceFacade.highlightMoveOptions(row, column);
+				    		}
+			    		}
+			    	}else{ //otherwise if there is a piece selected the player must choose where to move the piece
+			    			
+			    		if(movementOptions.contains(tileClicked)){ //check if the selected piece can go to the tile clicked
+					    	interfaceFacade.updateBoardPieceLocation(selectedTile, tileClicked);
+			    		}
+			    			
+			    		if(interfaceFacade.getRoqueState(tileClicked) == true){
+			    			interfaceFacade.Roque(selectedTile, tileClicked);
+			    		}
+			    			
+			    		interfaceFacade.setRoqueState(interfaceFacade.getTile(0, 0), false);
+			    		interfaceFacade.setRoqueState(interfaceFacade.getTile(7, 0), false);
+			    		interfaceFacade.setRoqueState(interfaceFacade.getTile(0, 7), false);
+			    		interfaceFacade.setRoqueState(interfaceFacade.getTile(7, 7), false);
+			    			
+			    		interfaceFacade.setTileSelection(selectedTile, false);
+			    		selectedTile = null;
+			    		movementOptions = null;
+			    	}
+			    	interfaceFacade.dataChanged();
+		    	}
+	    	}else if(SwingUtilities.isRightMouseButton(e)){
+	    		interfaceFacade.saveGame();
 	    	}
-	    	interfaceFacade.dataChanged();
         }
 	};
 	
@@ -102,7 +114,7 @@ public class BoardFrame extends JFrame implements Observer{
 		
 		bp.repaint();
 		
-		if(gameOver != 0){
+		if(gameOver != 0 && gameOver != -1){
 			if(gameOver == 1){
 				message = "StaleMate!";
 			}else if(gameOver == 2){

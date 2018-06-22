@@ -105,5 +105,13 @@ public class InterfaceFacade {
 	public void resetGame(){
 		Board.getBoard().resetGame();
 	}
+	
+	public void saveGame(){
+		Board.getBoard().saveGame();
+	}
+	
+	public void loadGame(){
+		Board.getBoard().loadGame();
+	}
 
 }
