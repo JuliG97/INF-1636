@@ -106,6 +106,11 @@ public class Board extends Observable{
 			updatePieceLocation(t1, boardMatrix[t1.getRow()][6]);
 			updatePieceLocation(t2, boardMatrix[t1.getRow()][5]);
 		}
+		
+		if(t2.getColumn() == 0){
+			updatePieceLocation(t1, boardMatrix[t1.getRow()][2]);
+			updatePieceLocation(t2, boardMatrix[t1.getRow()][3]);
+		}
 		nextPlayerTurn();
 	}
 
